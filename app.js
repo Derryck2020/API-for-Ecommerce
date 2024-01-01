@@ -8,23 +8,32 @@ const app = express();
 
 //auxillary packages
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 
 //database import
 const connectDB = require('./db/connect');
 
+// routers
+const authRouter = require('./routes/authRoutes');
+const userRouter = require('./routes/userRoutes');
+
 //middleware import
 const notFoundMiddleware = require('./middleware/not-found');
-const noterrorHandlerMiddleware = require('./middleware/error-handler');
+const errorHandlerMiddleware = require('./middleware/error-handler');
 
 app.use(morgan('tiny'));
 app.use(express.json());
+app.use(cookieParser(process.env.JWT_SECRET));
 
 app.get('/', (req, res) => {
-	res.send('e-commerce api');
+	res.send('e-commerce api development');
 });
 
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/users', userRouter);
+
 app.use(notFoundMiddleware);
-app.use(noterrorHandlerMiddleware);
+app.use(errorHandlerMiddleware);
 
 const port = process.env.PORT || 5000;
 const start = async () => {
